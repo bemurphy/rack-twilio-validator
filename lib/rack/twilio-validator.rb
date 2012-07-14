@@ -22,7 +22,7 @@ module Rack
         response = ::Twilio::TwiML::Response.new do |r|
           r.Say("Unable to authenticate request. Please try again.")
         end
-        [401, { "Content-Type" => "application/xml" }, response.text]
+        [401, { "Content-Type" => "application/xml" }, [response.text]]
       end
     end
 
