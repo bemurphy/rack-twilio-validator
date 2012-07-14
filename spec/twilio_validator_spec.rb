@@ -13,14 +13,14 @@ describe Rack::TwilioValidator do
     end
   }
 
-  context "a valid signature" do
+  context "given a valid signature" do
     it "is ok" do
       post(uri, params, "HTTP_X_TWILIO_SIGNATURE" => valid_signature)
       last_response.should be_ok
     end
   end
 
-  context "an invalid signature" do
+  context "given an invalid signature" do
     before do
       post(uri, params, "HTTP_X_TWILIO_SIGNATURE" => "bad_signature")
     end
@@ -29,19 +29,19 @@ describe Rack::TwilioValidator do
       last_response.status.should == 401
     end
 
-    it "provides a TwiML error" do
+    it "receives a TwiML error in the response body" do
       last_response.body.should include("<Response><Say>Unable to authenticate request. Please try again.</Say></Response>")
     end
   end
 
-  context "a missing signature" do
+  context "given no signature" do
     it "is unauthorized" do
       post(uri, params, "HTTP_X_TWILIO_SIGNATURE" => nil)
       last_response.status.should == 401
     end
   end
 
-  context "when a protected path is supplied" do
+  context "with an optional supplied protected path" do
     let(:app) {
       Rack::Builder.new do
         use Rack::TwilioValidator, :auth_token => "5cc8534fb3f86ff7e52d884562bcca18", :protected_path => "/twilio"
