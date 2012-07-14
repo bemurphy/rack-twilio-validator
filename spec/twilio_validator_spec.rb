@@ -30,7 +30,7 @@ describe Rack::TwilioValidator do
     end
 
     it "receives a TwiML error in the response body" do
-      last_response.body.should include("<Response><Say>Unable to authenticate request. Please try again.</Say></Response>")
+      last_response.body.should include("<Response><Say>Middleware unable to authenticate request signature</Say></Response>")
     end
   end
 

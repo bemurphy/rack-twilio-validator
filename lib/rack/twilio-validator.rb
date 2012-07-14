@@ -20,7 +20,7 @@ module Rack
         @app.call(env)
       else
         response = ::Twilio::TwiML::Response.new do |r|
-          r.Say("Unable to authenticate request. Please try again.")
+          r.Say("Middleware unable to authenticate request signature")
         end
         [401, { "Content-Type" => "application/xml" }, [response.text]]
       end
