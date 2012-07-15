@@ -16,7 +16,7 @@ module Rack
     def _call(env)
       @request = Rack::Request.new(env)
 
-      if unprotected_path? || request_validator.validate(@request.url, @request.params, env['HTTP_X_TWILIO_SIGNATURE'])
+      if unprotected_path? || validate(env['HTTP_X_TWILIO_SIGNATURE'])
         @app.call(env)
       else
         response = ::Twilio::TwiML::Response.new do |r|
@@ -37,8 +37,20 @@ module Rack
       ! protected_path?
     end
 
-    def request_validator
-      @validator ||= ::Twilio::Util::RequestValidator.new(@auth_token)
+    # Twilio currently strips the port from https requests.  See
+    # https://www.twilio.com/docs/security under 'A Few Notes' for
+    # more info
+    def formatted_url
+      if @request.scheme == "https"
+        @request.url.gsub(/:#{@request.port}/, '')
+      else
+        @request.url
+      end
+    end
+
+    def validate(signature)
+      validator = ::Twilio::Util::RequestValidator.new(@auth_token)
+      validator.validate(formatted_url, @request.params, signature)
     end
   end
 end

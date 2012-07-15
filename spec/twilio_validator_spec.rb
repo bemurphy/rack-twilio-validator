@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Rack::TwilioValidator do
   let(:auth_token) { "5cc8534fb3f86ff7e52d884562bcca18" }
-  let(:params) { { :foo => "fizz", :bar => "buzz" } }
+  let(:params) { { "foo" => "fizz", "bar" => "buzz" } }
   let(:valid_signature) { "4C3R3E2C2TwiOkEwqznWMH1k3O8=" }
   let(:uri) { "/twilio/endpoint"}
 
@@ -38,6 +38,20 @@ describe Rack::TwilioValidator do
     it "is unauthorized" do
       post(uri, params, "HTTP_X_TWILIO_SIGNATURE" => nil)
       last_response.status.should == 401
+    end
+  end
+
+  context "for a request with credentials in the url" do
+    it "drops the credentials in the url when validating the signature" do
+      post("http://username:password@example.org#{uri}", params, "HTTP_X_TWILIO_SIGNATURE" => valid_signature)
+      last_response.should be_ok
+    end
+  end
+
+  context "for an https request" do
+    it "drops the port when validating" do
+      post "https://example.org:7654#{uri}", params, "HTTP_X_TWILIO_SIGNATURE" => "U2ixEfmunlgHywjscRAc90fuucQ="
+      last_response.should be_ok
     end
   end
 
