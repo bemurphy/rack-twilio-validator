@@ -4,6 +4,18 @@ Rack::TwilioValidator
 Rack middleware for authorizing the signature on Twilio requests.
 Read more about Twilio security at [Twilio Security](http://www.twilio.com/docs/security)
 
+Important Note
+--------------
+
+Due to some legacy issues with how Twilio generates the signature, versions 0.0.3 and
+prior may not properly validate requests where basic authentication credentials are
+provided via the url, or when SSL requests are made to a non-standard port.  See more at
+[http://www.twilio.com/docs/security#notes](http://www.twilio.com/docs/security#notes)
+
+I'm looking to fix this shortly, but for the time being recommend either avoid using the
+gem if you have such a setup, or, do heavy manual integration testing to ensure the validation
+is functioning as you expect.  Apologies for the inconvenience.
+
 Why
 ---
 
